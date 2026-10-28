@@ -1,0 +1,16 @@
+{
+  "required": true,
+  "package": "dev.sunshine.client.mixin",
+  "compatibilityLevel": "JAVA_25",
+  "client": [
+    "MouseHandlerMixin",
+    "CameraMixin",
+    "MouseClickCpsMixin",
+    "PlayerNametagMixin",
+    "LivingNametagMixin",
+    "MotionBlurMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
