@@ -66,16 +66,16 @@ public final class SunshineScreen extends Screen {
         panelX = (this.width - panelWidth) / 2;
         panelY = (this.height - panelHeight) / 2;
         compact = panelHeight < 280;
-        sidebarWidth = Math.max(126, Math.min(174, panelWidth / 5));
-        contentX = panelX + sidebarWidth + PAD;
-        contentWidth = panelWidth - sidebarWidth - PAD * 2;
+        sidebarWidth = SunshineConfig.grimSkidTheme ? 94 : Math.max(126, Math.min(174, panelWidth / 5));
+        contentX = panelX + sidebarWidth + (SunshineConfig.grimSkidTheme ? 14 : PAD);
+        contentWidth = panelWidth - sidebarWidth - (SunshineConfig.grimSkidTheme ? 26 : PAD * 2);
         footerY = panelY + panelHeight - CLOSE_H - 8;
-        catTop = panelY + (compact ? 56 : 64);
-        catStep = Math.max(16, Math.min(28, (footerY - 8 - catTop) / CATEGORIES.length));
+        catTop = panelY + (compact ? 56 : (SunshineConfig.grimSkidTheme ? 66 : 64));
+        catStep = SunshineConfig.grimSkidTheme ? Math.max(28, Math.min(42, (footerY - 12 - catTop) / CATEGORIES.length)) : Math.max(16, Math.min(28, (footerY - 8 - catTop) / CATEGORIES.length));
         catH = catStep - 4;
-        cardH = compact ? 38 : (SunshineConfig.grimSkidTheme ? 50 : 58);
+        cardH = compact ? 38 : (SunshineConfig.grimSkidTheme ? 54 : 58);
         cardGap = compact ? 5 : (SunshineConfig.grimSkidTheme ? 7 : 9);
-        columnGap = SunshineConfig.grimSkidTheme ? 8 : 10;
+        columnGap = SunshineConfig.grimSkidTheme ? 12 : 10;
         cardWidth = SunshineConfig.grimSkidTheme ? Math.max(120, (contentWidth - columnGap) / 2) : contentWidth;
         int searchY = panelY + (compact ? 42 : 54);
         int searchH = compact ? 18 : 22;
@@ -204,31 +204,53 @@ public final class SunshineScreen extends Screen {
             g.fill(pillX + 8, panelY + 17, pillX + 13, panelY + 22, 0xFF65E39A);
             g.text(font, Component.literal("CLIENT ACTIVE").withStyle(s -> s.withColor(0xFFD8E8D6).withBold(true)), pillX + 19, panelY + 16, TEXT);
         } else if (grimTheme) {
-            g.fill(panelX + PAD, panelY + 10, panelX + PAD + 22, panelY + 30, 0xFF34313D);
-            g.outline(panelX + PAD, panelY + 10, 22, 20, 0xFF554967);
-            g.centeredText(font, Component.literal("S").withStyle(s -> s.withColor(GRIM_PALE).withBold(true)), panelX + PAD + 11, panelY + 16, TEXT);
-            g.text(font, Component.literal("SUNSHINE").withStyle(s -> s.withColor(TEXT).withBold(true)), panelX + PAD + 30, panelY + 10, TEXT);
-            g.text(font, Component.literal("CLIENT  /  4.4-INSPIRED THEME").withStyle(s -> s.withColor(MUTED)), panelX + PAD + 30, panelY + 23, TEXT);
+            g.fill(panelX + 18, panelY + 10, panelX + 40, panelY + 32, 0xFF34313D);
+            g.outline(panelX + 18, panelY + 10, 22, 22, 0xFF554967);
+            g.centeredText(font, Component.literal("S").withStyle(s -> s.withColor(GRIM_PALE).withBold(true)), panelX + 29, panelY + 17, TEXT);
+            g.text(font, Component.literal("SUNSHINE").withStyle(s -> s.withColor(TEXT).withBold(true)), panelX + 48, panelY + 10, TEXT);
+            g.text(font, Component.literal("CLIENT SETTINGS").withStyle(s -> s.withColor(MUTED)), panelX + 48, panelY + 23, TEXT);
         } else {
             g.text(font, Component.literal("SUNSHINE").withStyle(s -> s.withColor(accent()).withBold(true)), panelX + PAD, panelY + 12, TEXT);
             g.text(font, Component.literal("CLIENT  /  P5  ·  BALANCED").withStyle(s -> s.withColor(MUTED)), panelX + PAD, panelY + 23, TEXT);
         }
-        g.text(font, Component.literal(grimTheme ? "FEATURES" : "CATEGORIES").withStyle(s -> s.withColor(MUTED).withBold(true)), panelX + PAD, catTop - 12, TEXT);
+        g.text(font, Component.literal(grimTheme ? "MENU" : "CATEGORIES").withStyle(s -> s.withColor(MUTED).withBold(true)), panelX + (grimTheme ? 18 : PAD), catTop - 12, TEXT);
 
         int categoryY = catTop;
         for (String category : CATEGORIES) {
             boolean selected = category.equals(selectedCategory);
-            boolean hover = inside(mouseX, mouseY, panelX + 8, categoryY, sidebarWidth - 16, catH);
+            boolean hover = inside(mouseX, mouseY, panelX + 7, categoryY, sidebarWidth - 14, catH);
             float h = balanced ? (selected ? 1f : hover ? 0.35f : 0f)
                     : animate(hoverAnim, "cat:" + category, hover || selected, step);
             int bg = grimTheme
-                    ? SunshineClient.lerpColor(0x002E3137, selected ? 0xFF34373E : 0x55383D46, h)
+                    ? SunshineClient.lerpColor(0x002E3137, selected ? 0xFF353840 : 0x55383D46, h)
                     : SunshineClient.lerpColor(0x00333322, selected ? 0x66333322 : 0x553F4652, h);
-            g.fill(panelX + 8, categoryY, panelX + sidebarWidth - 8, categoryY + catH, bg);
-            if (selected) g.fill(panelX + 8, categoryY, panelX + 11, categoryY + catH, accent());
-            int offset = Math.round(h * 3);
-            g.text(font, Component.literal(category).withStyle(s -> s.withColor(selected ? accent() : TEXT)),
-                    panelX + 17 + offset, categoryY + (catH - 8) / 2, TEXT);
+            g.fill(panelX + 7, categoryY, panelX + sidebarWidth - 7, categoryY + catH, bg);
+            if (selected) g.fill(panelX + 7, categoryY + 3, panelX + 10, categoryY + catH - 3, accent());
+            int offset = Math.round(h * 2);
+            if (grimTheme) {
+                String glyph = switch (category) {
+                    case "Visual" -> "◉";
+                    case "HUD" -> "▦";
+                    case "Movement" -> "⇄";
+                    case "Combat" -> "✣";
+                    case "Misc" -> "•••";
+                    default -> "⚙";
+                };
+                g.fill(panelX + 16, categoryY + (catH - 22) / 2, panelX + 38, categoryY + (catH - 22) / 2 + 22,
+                        selected ? 0xFF45404F : 0xFF2A2D33);
+                g.centeredText(font, Component.literal(glyph).withStyle(s -> s.withColor(selected ? GRIM_PALE : MUTED)),
+                        panelX + 27, categoryY + (catH - 8) / 2, TEXT);
+                String shortName = switch (category) {
+                    case "Movement" -> "Move";
+                    case "Client Looks" -> "Looks";
+                    default -> category;
+                };
+                g.text(font, Component.literal(shortName).withStyle(s -> s.withColor(selected ? TEXT : MUTED)),
+                        panelX + 43 + offset, categoryY + (catH - 8) / 2, TEXT);
+            } else {
+                g.text(font, Component.literal(category).withStyle(s -> s.withColor(selected ? accent() : TEXT)),
+                        panelX + 17 + offset, categoryY + (catH - 8) / 2, TEXT);
+            }
             categoryY += catStep;
         }
 
@@ -317,7 +339,12 @@ public final class SunshineScreen extends Screen {
         int textX = x + (balanced ? 12 : (SunshineConfig.grimSkidTheme ? 12 : 40));
         if (!balanced && !SunshineConfig.grimSkidTheme) g.centeredText(font, Component.literal(module.name().substring(0, 1)).withStyle(st -> st.withColor(accent()).withBold(true)), x + 21, y + (cardH - 8) / 2, TEXT);
         g.text(font, Component.literal(module.name()).withStyle(st -> st.withColor(TEXT).withBold(true)), textX, nameY, TEXT);
-        g.text(font, Component.literal(module.description()).withStyle(st -> st.withColor(MUTED)), textX, nameY + (compact ? 11 : (SunshineConfig.grimSkidTheme ? 13 : 15)), TEXT);
+        String description = module.description();
+        if (SunshineConfig.grimSkidTheme && font.width(description) > w - 112) {
+            while (!description.isEmpty() && font.width(description + "…") > w - 112) description = description.substring(0, description.length() - 1);
+            description = description.isEmpty() ? "" : description + "…";
+        }
+        g.text(font, Component.literal(description).withStyle(st -> st.withColor(MUTED)), textX, nameY + (compact ? 11 : (SunshineConfig.grimSkidTheme ? 15 : 15)), TEXT);
         int gearX = x + w - 66;
         g.fill(gearX, y + (cardH - 18) / 2, gearX + 20, y + (cardH - 18) / 2 + 18, hover ? (SunshineConfig.grimSkidTheme ? 0xFF403749 : 0xFF38301A) : 0xFF25282E);
         g.outline(gearX, y + (cardH - 18) / 2, 20, 18, hover ? accent() : (SunshineConfig.grimSkidTheme ? 0xFF4A4E57 : BORDER));
